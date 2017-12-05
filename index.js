@@ -38,8 +38,44 @@ Promise.resolve()
 app.get('/films/:id/recommendations', getFilmRecommendations);
 
 // ROUTE HANDLER
-function getFilmRecommendations(req, res) {
-  res.status(500).send('Not Implemented');
+function getFilmRecommendations(req, res, next) {
+  let err;
+  if(isNaN(req.params.id) ){
+    err = new Error('Invalid route');
+    err.status = 422;
+    return next(err);
+  }
+
+  let limit = req.query.limit;
+  let offset = req.query.offset;
+
+  if( (limit && isNaN(limit) ) ||
+    (offset && isNaN(offset)) ){
+      err = new Error('Invalid limit');
+      err.status = 422;
+      return next(err);
+    }
+    
 }
+
+/*
+  Handles missing routes
+*/
+app.get('*', function(req, res, next) {
+  const err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+ });
+
+// error handler
+app.use(function(err, req, res, next) {
+
+  let status = err.status || 500;
+
+  res.status(status).json({
+    status: status,
+    message: err.message
+  });
+});
 
 module.exports = app;

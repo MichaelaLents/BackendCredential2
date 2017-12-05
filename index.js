@@ -6,6 +6,29 @@ const sqlite = require('sqlite'),
 
 const { PORT=3000, NODE_ENV='development', DB_PATH='./db/database.db' } = process.env;
 
+let db = new Sequelize('../db/database.db', 'username', '', {
+  dialect: 'sqlite',
+  storage: './db/database.db'
+  });
+
+let genres = db.define('genres', {
+  name: Sequelize.STRING
+  },
+  {
+    timestamps: false
+  });
+
+let films = db.define('films', {
+  title: Sequelize.STRING,
+  release_date: Sequelize.DATE,
+  genre_id: Sequelize.STRING
+  },
+    {
+      timestamps: false
+  });
+
+db.sync();
+
 // START SERVER
 Promise.resolve()
   .then(() => app.listen(PORT, () => console.log(`App listening on port ${PORT}`)))
